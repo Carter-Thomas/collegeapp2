@@ -1,36 +1,38 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## Inspiration
 
-## Getting Started
+We wanted to make it easier for students to discover colleges, without getting lost in outdated websites, buried links, or PDFs that haven’t been updated since dial-up internet. CollegeConnect exists to bring all that chaos into one gloriously simple, actually-usable app.
 
-First, run the development server:
+## What it does
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+CollegeConnect lets students input their academic stats and hunt for colleges they might want to go to, without having to open 17 browser tabs or decipher mysterious Excel spreadsheets. You can filter, paginate, and pretend you have your life together with a UI that looks like it belongs in this century.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## How we built it
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Frontend:** Next.js with React, TypeScript, and Tailwind because we enjoy pain  
+- **Backend:** College Scorecard API from the Department of Education (surprisingly usable, 10/10, would fetch again)  
+- **Routing & Pagination:** Next.js dynamic routing with URL-based query params because we enjoy watching ourselves suffer
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Challenges we ran into
 
-## Learn More
+- Deleted a dependency file and triggered a full-on crisis. Ended up reinstalling everything and migrating the whole codebase like nomads. It was... a time.
+- Next.js components not playing nice and routes being a cryptic mess made for a thrilling debugging experience.  
+- TypeScript. Do we need to say more?
 
-To learn more about Next.js, take a look at the following resources:
+## Accomplishments that we're proud of
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Somehow created a clean, modern UI that people didn’t recoil from  
+- Managed to get filtering and pagination working *with* dynamic urls (take that, query strings)  
+- Maintained sanity and didn’t rage quit—arguably our greatest technical feat  
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## What we learned
 
-## Deploy on Vercel
+- TypeScript errors are like mini-puzzles... that slowly destroy your will to live  
+- How to wrangle shadcn components into doing what we want (eventually)  
+- Next.js pagination, routing, and query params are like that one group project member who insists they’re helping but just cause problems  
+- That deleting `node_modules` is the tech equivalent of a summoning ritual, usually for chaos
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## What's next for CollegeConnect
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- School-specific admin portals so orgs can actually update their info and we stop getting emails about it  
+- Making it not look weird on phones (wild idea, we know)  
+- Maybe throw some AI at the problem and let the robots recommend orgs to students, because what could *possibly* go wrong?

@@ -213,7 +213,7 @@ export default function CollegeDetailsPage() {
                   <Card className="border-0 shadow-md rounded-xl">
                     <div className="flex items-center justify-between px-4 pt-4">
                       <h2 className="text-xl font-semibold text-slate-800">
-                        Avg Test Scores
+                        Average Test Scores
                       </h2>
                       <Select value={scoreType} onValueChange={setScoreType}>
                         <SelectTrigger className="w-[100px]">

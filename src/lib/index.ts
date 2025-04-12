@@ -7,9 +7,7 @@ const BASE_URL = "https://api.data.gov/ed/collegescorecard/v1/schools";
 // Search function
 export async function searchColleges(params: SearchParams): Promise<College[]> {
   try {
-    console.log("Params", JSON.stringify(params));
     const query = buildQuery(params);
-    console.log("Query", query.toString());
 
     const response = await fetch(`${BASE_URL}?${query.toString()}`);
     if (!response.ok) {
@@ -94,15 +92,15 @@ function buildQuery({
         searchParams.append("school.state", school.location.state);
       }
       if (school.location.zip) {
-        searchParams.append("school.zip", school.location.zip);
+        searchParams.append("zip", school.location.zip);
+        if (school.location.distance) {
+          searchParams.append("distance", `${school.location.distance}mi`);
+        }
       }
       if (school.location.geographic) {
         const { latitude, longitude } = school.location.geographic;
         searchParams.append("location.lat", latitude.toString());
         searchParams.append("location.lon", longitude.toString());
-      }
-      if (school.location.distance) {
-        searchParams.append("distance", `${school.location.distance}mi`);
       }
     }
   }

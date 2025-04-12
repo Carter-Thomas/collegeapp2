@@ -12,13 +12,13 @@ import Link from "next/link";
 
 export default function NavBar() {
   return (
-    <div className="sticky top-0 z-400 w-full bg-background border-b border-border flex items-center pt-10 justify-between h-16 px-4">
-      <Link href="/" className="flex items-center">
-        <img src={"/cclogo1.png"} alt="Logo" className="h-20 w-50 pb-2 mr-3" />
+    <div className="sticky top-0 z-400 w-full bg-background border-b border-border p-5 flex items-center justify-between px-4">
+      <Link href="/" className="flex items-center my-auto">
+        <img src={"/cclogo1.png"} alt="Logo" className="h-10 w-30 mr-3 object-fill" />
       </Link>
       <Link
         href="/search"
-        className="text-2xl sticky font-bold text-primary hover:text-gray-400"
+        className="text-2xl sticky font-semibold text-primary hover:text-gray-400"
       >
         View Colleges
       </Link>

@@ -28,12 +28,13 @@ interface Props {
 
 export default function Search({ handleSearchProp }: Props) {
   const [searchData, setSearchData] = useState<SearchParams>({
-    paging: { page: 1, per_page: 100 },
+    paging: { page: 1, per_page: 20 },
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [formKey, setFormKey] = useState(0);
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,82 +50,65 @@ export default function Search({ handleSearchProp }: Props) {
     }
   };
 
-  const handleStateChange = (value: string) => setSearchData((prev) => {
-      return {
-        ...prev,
-        school: {
-          ...prev.school,
-          state: value.toUpperCase().slice(0, 2),
-        }
-      };
-    });
-  };
-
-  const handleZipChange = (value: string) => {
-    const zipValue = value.replace(/\D/g, "");
-    setSearchData((prev) => {
-      const newSchool = { ...prev.school };
-      newSchool.location = {
-        ...newSchool.location,
-        zip: zipValue || undefined
-      };
-      return {
-        ...prev,
-        school: newSchool
-      };
-    });
-  };
-
-  const handleDistanceChange = (value: string) => {
-    const numericValue = parseInt(value.replace(/\D/g, "")) || 0;
-    setSearchData((prev) => {
-      const newSchool = { ...prev.school };
-      if (!newSchool.location) {
-        newSchool.location = { distance: numericValue };
-      } else {
-        newSchool.location = {
-          ...newSchool.location,
-          distance: numericValue
-        };
-      }
-      return {
-        ...prev,
-        school: newSchool
-      };
-    });
-  };
-
-  const handleCollegeTypeChange = (value: string) => {
-    setSearchData((prev) => ({
-      ...prev,
-      school: {
-        ...prev.school,
-        ownership: value as "public" | "private non-profit" | "private for-profit"
-      }
-    }));
-  };
-
   const handleInputChange = (name: string, value: string) => {
     if (errors[name]) {
-      setErrors((prev) => {
-        const newErrors = { ...prev };
-        delete newErrors[name];
-        return newErrors;
+      setErrors((prevErrors) => {
+        const { [name]: _, ...remainingErrors } = prevErrors;
+        return remainingErrors;
       });
     }
 
     switch (name) {
       case "state":
-        handleStateChange(value);
+        setSearchData((prev) => {
+          return {
+            ...prev,
+            school: {
+              ...prev.school,
+              location: {
+                ...prev.school?.location,
+                state: value,
+              }
+            }
+          };
+        });
         break;
       case "zip":
-        handleZipChange(value);
+        setSearchData((prev) => {
+          return {
+            ...prev,
+            school: {
+              ...prev.school,
+              location: {
+                ...prev.school?.location,
+                zip: value,
+              }
+            }
+          };
+        });
         break;
       case "distance":
-        handleDistanceChange(value);
+        setSearchData((prev) => {
+          return {
+            ...prev,
+            school: {
+              ...prev.school,
+              location: {
+                ...prev.school?.location,
+                distance: parseInt(value) || undefined,
+              }
+            }
+          };
+        });
         break;
       case "collegeType":
-        handleCollegeTypeChange(value);
+        setSearchData((prev) => ({
+          ...prev,
+          school: {
+            ...prev.school,
+            ownership: value as "public" | "private non-profit" | "private for-profit"
+          }
+        }));
         break;
       default:
         setSearchData((prev) => ({
@@ -132,6 +116,15 @@ export default function Search({ handleSearchProp }: Props) {
           [name]: value
         }));
     }
+  };
+
+  const resetForm = () => {
+    const initialState = {
+      paging: { page: 1, per_page: 20 }
+    };
+    setSearchData(initialState);
+    setErrors({});
+    handleSearchProp(initialState);
   };
 
   return (
@@ -152,7 +145,7 @@ export default function Search({ handleSearchProp }: Props) {
               <TabsTrigger value="college">College Type</TabsTrigger>
             </TabsList>
 
-            <form onSubmit={handleSearch}>
+            <form key={formKey} onSubmit={handleSearch}>
               <TabsContent value="location" className="mt-0">
                 <div className="grid grid-cols-4 gap-4 mb-4">
                   <div className="space-y-2">
@@ -203,133 +196,117 @@ export default function Search({ handleSearchProp }: Props) {
               </TabsContent>
 
               <TabsContent value="academics" className="mt-0">
-                <div className="grid grid-cols-2 gap-4 mb-4">
+                <div className="grid grid-cols-4 gap-4 mb-4">
                   <div className="space-y-2">
-                    <Label htmlFor="sat">Minimum SAT Math Score (0-1600)</Label>
+                    <Label htmlFor="sat">Min/Max SAT Math Score (0-1600)</Label>
+                    <div className="flex flex-row gap-1">
                     <Input
                       id="sat"
-                      placeholder="1200"
+                      placeholder="0"
                       type="number"
-                      min="0"
+                      min="200"
                       max="1600"
                       value={searchData.admissions?.sat_scores?.math?.min}
                       onChange={(e) => handleInputChange("sat", e.target.value)}
-                      className={errors.sat ? "border-red-500" : ""}
+                      className={errors.sat ? "border-red-500" : "w-25"}
                     />
-                    {errors.sat && (
-                      <p className="text-sm text-red-500">{errors.sat}</p>
-                    )}
-                    <Label htmlFor="sat">Maximum SAT Math Score (0-1600)</Label>
                     <Input
                       id="sat"
-                      placeholder="1200"
+                      placeholder="800"
                       type="number"
                       min="0"
                       max="1600"
                       value={searchData.admissions?.sat_scores?.math?.max}
                       onChange={(e) => handleInputChange("sat", e.target.value)}
-                      className={errors.sat ? "border-red-500" : ""}
+                      className={errors.sat ? "border-red-500" : "w-25"}
                     />
+                    </div>
                     {errors.sat && (
                       <p className="text-sm text-red-500">{errors.sat}</p>
                     )}
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="sat">
-                      Minimum SAT Reading Score (0-1600)
-                    </Label>
+                    <Label htmlFor="sat">Min/Max SAT Math Score (0-1600)</Label>
+                    <div className="flex flex-row gap-1">
                     <Input
                       id="sat"
-                      placeholder="1200"
+                      placeholder="0"
+                      type="number"
+                      min="200"
+                      max="1600"
+                      value={searchData.admissions?.sat_scores?.math?.min}
+                      onChange={(e) => handleInputChange("sat", e.target.value)}
+                      className={errors.sat ? "border-red-500" : "w-25"}
+                    />
+                    <Input
+                      id="sat"
+                      placeholder="800"
                       type="number"
                       min="0"
                       max="1600"
-                      value={searchData.admissions?.sat_scores?.reading?.min}
+                      value={searchData.admissions?.sat_scores?.math?.max}
                       onChange={(e) => handleInputChange("sat", e.target.value)}
-                      className={errors.sat ? "border-red-500" : ""}
+                      className={errors.sat ? "border-red-500" : "w-25"}
                     />
-                    {errors.sat && (
-                      <p className="text-sm text-red-500">{errors.sat}</p>
-                    )}
-                    <Label htmlFor="sat">
-                      Maximum SAT Reading Score (0-1600)
-                    </Label>
-                    <Input
-                      id="sat"
-                      placeholder="1200"
-                      type="number"
-                      min="0"
-                      max="1600"
-                      value={searchData.admissions?.sat_scores?.reading?.max}
-                      onChange={(e) => handleInputChange("sat", e.target.value)}
-                      className={errors.sat ? "border-red-500" : ""}
-                    />
+                    </div>
                     {errors.sat && (
                       <p className="text-sm text-red-500">{errors.sat}</p>
                     )}
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="sat">
-                      Minimum SAT Writing Score (0-1600)
-                    </Label>
+                    <Label htmlFor="sat">Min/Max SAT Math Score (0-1600)</Label>
+                    <div className="flex flex-row gap-1">
                     <Input
                       id="sat"
-                      placeholder="1200"
+                      placeholder="0"
+                      type="number"
+                      min="200"
+                      max="1600"
+                      value={searchData.admissions?.sat_scores?.math?.min}
+                      onChange={(e) => handleInputChange("sat", e.target.value)}
+                      className={errors.sat ? "border-red-500" : "w-25"}
+                    />
+                    <Input
+                      id="sat"
+                      placeholder="800"
                       type="number"
                       min="0"
                       max="1600"
-                      value={searchData.admissions?.sat_scores?.writing?.min}
+                      value={searchData.admissions?.sat_scores?.math?.max}
                       onChange={(e) => handleInputChange("sat", e.target.value)}
-                      className={errors.sat ? "border-red-500" : ""}
+                      className={errors.sat ? "border-red-500" : "w-25"}
                     />
-                    {errors.sat && (
-                      <p className="text-sm text-red-500">{errors.sat}</p>
-                    )}
-                    <Label htmlFor="sat">
-                      Maximum SAT Writing Score (0-1600)
-                    </Label>
-                    <Input
-                      id="sat"
-                      placeholder="1200"
-                      type="number"
-                      min="0"
-                      max="1600"
-                      value={searchData.admissions?.sat_scores?.writing?.max}
-                      onChange={(e) => handleInputChange("sat", e.target.value)}
-                      className={errors.sat ? "border-red-500" : ""}
-                    />
+                    </div>
                     {errors.sat && (
                       <p className="text-sm text-red-500">{errors.sat}</p>
                     )}
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="act">Min ACT Score (0-36)</Label>
+                    <Label htmlFor="sat">Min/Max ACT Composite Score (0-1600)</Label>
+                    <div className="flex flex-row gap-1">
                     <Input
-                      id="act"
-                      placeholder="24"
+                      id="sat"
+                      placeholder="0"
+                      type="number"
+                      min="200"
+                      max="1600"
+                      value={searchData.admissions?.sat_scores?.math?.min}
+                      onChange={(e) => handleInputChange("sat", e.target.value)}
+                      className={errors.sat ? "border-red-500" : "w-25"}
+                    />
+                    <Input
+                      id="sat"
+                      placeholder="800"
                       type="number"
                       min="0"
-                      max="36"
-                      value={searchData.admissions?.act_scores?.cumulative.min}
-                      onChange={(e) => handleInputChange("act", e.target.value)}
-                      className={errors.act ? "border-red-500" : ""}
+                      max="1600"
+                      value={searchData.admissions?.sat_scores?.math?.max}
+                      onChange={(e) => handleInputChange("sat", e.target.value)}
+                      className={errors.sat ? "border-red-500" : "w-25"}
                     />
-                    {errors.act && (
-                      <p className="text-sm text-red-500">{errors.act}</p>
-                    )}
-                    <Label htmlFor="act">Max ACT Score (0-36)</Label>
-                    <Input
-                      id="act"
-                      placeholder="24"
-                      type="number"
-                      min="0"
-                      max="36"
-                      value={searchData.admissions?.act_scores?.cumulative.max}
-                      onChange={(e) => handleInputChange("act", e.target.value)}
-                      className={errors.act ? "border-red-500" : ""}
-                    />
-                    {errors.act && (
-                      <p className="text-sm text-red-500">{errors.act}</p>
+                    </div>
+                    {errors.sat && (
+                      <p className="text-sm text-red-500">{errors.sat}</p>
                     )}
                   </div>
                 </div>
@@ -344,7 +321,7 @@ export default function Search({ handleSearchProp }: Props) {
                     onValueChange={(value) =>
                       handleInputChange("collegeType", value)
                     }
-                    defaultValue={searchData.school?.ownership}
+                    value={searchData.school?.ownership}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select college type" />
@@ -368,12 +345,7 @@ export default function Search({ handleSearchProp }: Props) {
                 <Button
                   variant="outline"
                   type="button"
-                  onClick={() => {
-                    setSearchData({
-                      paging: { page: 1, per_page: 100 },
-                    });
-                    setErrors({});
-                  }}
+                  onClick={resetForm}
                 >
                   Reset
                 </Button>

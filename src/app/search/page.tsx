@@ -26,7 +26,7 @@ export default function SearchPage() {
   const [searchParams, setSearchParams] = useState<SearchParams>({
     paging: {
       page: 1,
-      per_page: 100,
+      per_page: 20,
     },
   });
 
@@ -74,7 +74,7 @@ export default function SearchPage() {
   }, [searchParams]);
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-1/2">
       {/* Sticky Top Search */}
       <Search handleSearchProp={handleSearch} />
 

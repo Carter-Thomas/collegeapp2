@@ -1,103 +1,116 @@
+"use client";
+
 import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import Link from "next/link";
+import { useState, useEffect } from "react";
+
+const coverImages = ["/coverimg1.jpg", "/coverimg2.jpg", "/coverimg3.jpg", "/coverimg4.jpg"];
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [nextImageIndex, setNextImageIndex] = useState(1 % coverImages.length);
+  const [transitioning, setTransitioning] = useState(false);
+  const baseOpacity = 0.5; // Your desired base opacity
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setTransitioning(true);
+      setTimeout(() => {
+        setCurrentImageIndex((prevIndex) => (prevIndex + 1) % coverImages.length);
+        setNextImageIndex((prevIndex) => (prevIndex + 2) % coverImages.length);
+        setTransitioning(false);
+      }, 1000);
+    }, 5000);
+
+    return () => clearInterval(intervalId);
+  }, []);
+
+  return (
+    <main className="relative flex flex-col items-center justify-center min-h-screen bg-background py-10 overflow-hidden">
+      <div className="absolute inset-0 z-0">
+        <Image
+          key={coverImages[currentImageIndex]}
+          src={coverImages[currentImageIndex]}
+          alt="College Campus"
+          layout="fill"
+          objectFit="cover"
+          style={{
+            opacity: transitioning ? 0 : baseOpacity,
+            transition: 'opacity 1s ease-in-out',
+          }}
+          className="absolute inset-0" 
+        />
+        <Image
+          key={coverImages[nextImageIndex]}
+          src={coverImages[nextImageIndex]}
+          alt="College Campus"
+          layout="fill"
+          objectFit="cover"
+          style={{
+            opacity: transitioning ? baseOpacity : 0,
+            transition: 'opacity 1s ease-in-out',
+          }}
+          className="absolute inset-0" // Remove opacity-0 from here
+        />
+      </div>
+
+      {/* Content Overlay */}
+      <div className="relative z-10 w-full max-w-5xl text-center p-6">
+        <h1 className="scroll-m-20 text-4xl font-bold tracking-tight lg:text-5xl text-primary">
+          Welcome to CollegeConnect
+        </h1>
+        <p className="mt-4 text-lg">
+          A platform to help students find the right college.
+        </p>
+      </div>
+
+      <section className="relative z-10 container grid gap-6 py-10 px-4 md:grid-cols-1 lg:grid-cols-3">
+        <Card>
+          <CardHeader>
+            <CardTitle>Personalized Recommendations</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <CardDescription>
+              Our sophisticated college finding algorithm gives YOU the best recommendations based on your preferences.
+            </CardDescription>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Filter Colleges</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <CardDescription>
+              Filter based off dozens of criteria including location, size, and major.
+            </CardDescription>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Comprehensive Information</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <CardDescription>
+              Discover detailed information about colleges, including tuition, acceptance rates, and campus life.
+            </CardDescription>
+          </CardContent>
+        </Card>
+      </section>
+
+      <div className="relative z-10">
+  <Link href="/search" className="pb-4">
+    <Button className="w-full max-w-xs bg-primary hover:bg-primary-foreground text-primary-foreground hover:text-gray-400">
+      Get Started
+    </Button>
+  </Link>
+  <Link href="/report">
+      <Button className="w-full max-w-xs bg-primary hover:bg-primary-foreground text-primary-foreground hover:text-gray-400">
+        See Something Wrong?
+      </Button>
+  </Link>
+</div>
+    </main>
   );
 }
